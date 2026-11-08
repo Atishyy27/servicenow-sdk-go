@@ -1,0 +1,18 @@
+name: probe-latest
+on:
+  push:
+    branches: [probe-latest]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: go version
+        run: go version
+      - name: vet
+        run: go vet ./... 2>&1 | tail -80 || true
+      - name: tests
+        run: go test -count=1 ./... 2>&1 | grep -v "^ok\|no test files" | tail -150
